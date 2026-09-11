@@ -1,14 +1,23 @@
 # Iskrov Agent
 
-> Turn model reasoning from a one-shot answer into a verifiable, recoverable, approval-aware execution process.
+> Cloud reasoning. Local execution.
 
-Iskrov Agent is a cloud-controlled, local-tool Agent product. The server owns models, planning, approval, evidence, budgets, recovery and scheduling; the local side runs only a lightweight, closed, authorized tool client. Progressive reasoning is one strategy implemented here, not this repository's independent identity.
+Iskrov Agent is an independent cloud-controlled, local-execution Agent product. It keeps model reasoning, planning, approval, evidence, budgets, and scheduling in the control plane, while reducing the local side to a lightweight, closed, authorized tool executor.
 
-Current version: `0.0.1` · Python `3.12+` · single-instance SQLite · no Docker · AGPL-3.0-only
+```text
+Cloud: models · planning · approval · evidence · scheduling
+Local: bounded tools · workspace operations · result submission
+```
 
-[简体中文](README.md)
+Current release: `0.0.1` · Python `3.12+` · AGPL-3.0-only · single-instance SQLite · no Docker
 
-## Why PRP
+## Product Position
+
+Iskrov Agent is not a chat UI and does not require every machine to download a full Agent CLI. It is for engineering tasks where a model needs to inspect code, propose changes, run bounded verification, and leave an auditable, recoverable record.
+
+The cloud control plane decides what should happen and whether it is allowed. The local execution plane performs only authorized operations inside the granted workspace and submits the result. The two planes connect through bounded tool calls, claims, leases, and idempotent result submission.
+
+## The Problem
 
 A model API solves:
 
@@ -16,125 +25,110 @@ A model API solves:
 send a message -> receive an answer
 ```
 
-An engineering task also needs to answer: why is this action allowed, what evidence says it is complete, who approved the write, what should happen after failure, and can a restart recover?
+An engineering Agent also needs to answer:
 
-PRP does not try to measure how much a model “thinks”. It controls how reasoning is planned, executed, verified, revised and stopped.
+- Was this operation allowed?
+- What evidence proves completion?
+- Who approved the write?
+- Should a failure be retried, cascaded, revised, or stopped?
+- Can the process recover safely after a server or client restart?
 
-## Minimal Use
+Iskrov Agent is built for that complete execution chain, not just text generation.
 
-The primary path is in-process `prp local run`. No HTTP server is required.
+## Architecture
+
+### Cloud Control Plane
+
+- Accepts tasks and selects an execution strategy
+- Calls configured model providers
+- Coordinates Planner, Worker, Analyzer, and Verifier roles
+- Owns budgets, approvals, events, recovery, and final state
+- Dispatches local tool calls through a Native Bridge when needed
+
+### Local Execution Plane
+
+- Does not run a model
+- Does not own cloud planning or approval authority
+- Executes only registered, bounded local tools
+- Does not require a full Agent CLI download
+- Supports claim recovery and idempotent result submission after disconnects
+
+## Tool Boundary
+
+The Agent can use only registered tools:
+
+`list_files` · `read_file` · `search_text` · `apply_patch` · `run_targeted_test` · `get_diff` · `get_status`
+
+Writes pass through Policy and Approval. Tests use pre-registered structured commands. A model cannot obtain an arbitrary shell, arbitrary host paths, unregistered network access, or self-granted permissions.
+
+## Execution Strategies
+
+| Strategy | Use it for | Behavior |
+|---|---|---|
+| `DIRECT` | Simple tasks | One WorkUnit, one Attempt, one verification |
+| `CASCADE` | Model fallback | Move to the next profile only after a retryable failure |
+| `PLANNED` | Dependency graphs | Planner proposes a DAG; Workers execute dependencies |
+| `PROGRESSIVE` | Evidence and revision | Execute, merge, verify, reuse, and revise within limits |
+
+`PROGRESSIVE` is one execution strategy supported by Iskrov Agent. It is not the product name or the sole theoretical identity of this repository. The independent protocol research lives in [Progressive Reasoning Protocol](https://github.com/entzauberung/prp).
+
+## Security and Isolation
+
+- The default local path boundary is `HOST`, not an operating-system sandbox
+- Selecting `SANDBOXED` requires real Linux `bubblewrap`
+- Sequential `LOCAL + HOST + DIRECT` can operate in place inside an authorized workspace
+- Parallel work, `PLANNED`, and `PROGRESSIVE` use isolated Slots and ChangeSets
+- The process envelope limits concurrency, attempts, tokens, slots, and copy capacity
+- Resource exhaustion returns a structured error and never silently changes location, strategy, or isolation
+
+## Quick Start
+
+Install:
 
 ```bash
 uv pip install .
 ```
 
+Configure an OpenAI-compatible Worker profile:
+
 ```bash
 export PRP_WORKER_PROFILE='{"alias":"worker","provider":"openai_compatible","model":"your-model","role":"WORKER","base_url":"https://models.example/v1","context_window_tokens":32000,"max_output_tokens":4000}'
+```
+
+Run a local in-process task:
+
+```bash
 prp local run "summarise this repository" --workspace .
 ```
 
-When ASK pauses, continue against the same workspace:
+Local execution does not depend on an HTTP server. If another program needs the interface, start the loopback-bound service explicitly:
+
+```bash
+prp serve
+```
+
+When a task pauses for approval:
 
 ```bash
 prp local approve <request_id> --workspace .
 prp local deny <request_id> --workspace . --reason "not allowed"
 ```
 
-`python -m prp_runtime` prints the package version. It does not start a server.
+## Boundaries
 
-## Optional HTTP and Other Topologies
+Iskrov Agent is a single-instance reference product and does not promise a production SLA. It currently does not provide multi-tenant billing, SSO, distributed queues, Kubernetes, or complete Codex, Claude Code, MCP, or A2A compatibility.
 
-`prp serve` is an optional loopback interface for other programs. It binds `127.0.0.1:8000` by default. Local run does not use this command. A wider bind must be explicit.
+It is not an arbitrary shell or a model-training platform. Model quality depends on the configured provider; the Agent places the execution process inside explicit tool, policy, evidence, and budget boundaries.
 
-```bash
-prp serve
-```
+## Relationship to PRP
 
-The three execution locations stay distinct and are never silently translated:
+These are two independent products:
 
-| Location | Behavior |
-|---|---|
-| `LOCAL` | Controller, provider adapter, tools and workspace share one process; default `HOST` |
-| `CLOUD` | Controller and tools execute inside the server process |
-| `BRIDGE` | The server owns models, planning, approval, evidence and merge; an assigned model-free client executes only its closed local tools |
+- **PRP** is an Apache-2.0 protocol research project defining facts, state machines, and revision laws for progressive reasoning.
+- **Iskrov Agent** is an AGPL-3.0-only Agent product using those concepts for cloud control and local tool execution.
 
-## Three Directions
+PRP can be implemented by other runtimes, and Iskrov Agent is not the only possible implementation of PRP. The two projects can evolve, release, and accept contributions independently.
 
-### Protocols and Facts
+## Open Source and License
 
-The declared subsets of Responses, Chat Completions and Anthropic Messages enter one Native Runtime. Runs, Attempts, Artifacts, Evidence, Events and Usage become auditable facts, with SSE replay, cancellation, recovery, budgets and error classification. These are declared subsets, not complete third-party protocol compatibility.
-
-### Agent and Tools
-
-The Agent can use only registered tools: `list_files`, `read_file`, `search_text`, `apply_patch`, `run_targeted_test`, `get_diff` and `get_status`.
-
-Writes pass through Policy and Approval. A patch creates a Snapshot and ChangeSet. Tests run only registered structured commands. A model cannot raise its own permissions or obtain an arbitrary shell or general network access.
-
-### Progressive Reasoning
-
-```text
-Planner proposal -> compile to DAG -> isolated Slot execution -> Evidence
-       -> Git three-way merge -> bounded revision -> new graph version
-```
-
-Progressive is not “ask the model again”. It requires new evidence before revision, fingerprint-based reuse, isolated writes, three-way merge, bounded revision/attempt/token budgets and rule-based final state.
-
-## Four Strategies
-
-| Strategy | Use it for | Core behavior |
-|---|---|---|
-| `DIRECT` | Simple tasks | One WorkUnit, one Attempt, one verification |
-| `CASCADE` | Fallbacks | Move to the next profile only for retryable failures |
-| `PLANNED` | Graph scheduling | Planner proposes a DAG; Workers execute dependencies |
-| `PROGRESSIVE` | Evidence and revision | Execute, merge, verify, reuse and revise within limits |
-
-## Isolation, Capacity and Security Boundaries
-
-- Sequential `LOCAL + HOST + DIRECT + concurrency=1` operates on the granted workspace root in place, guarded by descriptor/path-boundary checks, without a hidden full-tree `copytree`.
-- `HOST` is a path boundary, not an operating-system sandbox. HOST YOLO still requires the explicit user fact and the configured setting.
-- `SANDBOXED` is optional and requires real Linux `bubblewrap` when selected. HOST/LOCAL readiness does not require it. Sequential `prp local run` defaults to `HOST`; `--isolation-mode SANDBOXED` is rejected explicitly and is never silently converted to HOST.
-- True parallel work, `PLANNED` or `PROGRESSIVE` uses copied slots; defaults are `2` slots and `256 MiB`, capped at `8` slots and `512 MiB`.
-- The process envelope also bounds concurrency, attempts and tokens. Exhaustion returns a structured error and does not silently change location, strategy or isolation.
-- There is no Docker, Podman, cgroup-per-agent or per-agent daemon.
-
-## What It Is Good For
-
-Local one-process code tasks, read-only repository inspection, diagnosis, approval-aware small repairs, registered verification tasks, model fallback, budget control, replayable Agent flows and engineering tasks that need parallel work, conflict detection and bounded revision.
-
-PRP is not an arbitrary shell, a model-training platform or a production SLA. It does not promise complete Codex, Claude Code, MCP or A2A compatibility. Whether a model is strong enough depends on the configured provider.
-
-## How It Differs
-
-- A model API defines message format; PRP defines how a task advances.
-- A tool protocol says what can be called; PRP also records approval, evidence, snapshots, changesets and stop conditions.
-- Open-ended reflection depends on the model deciding to continue; PRP uses Evidence, state machines and budgets to decide revision.
-- Naive parallel work can overwrite changes; PRP uses Slots, ChangeSets, fingerprints and three-way merge.
-
-## Research Context
-
-These are related research directions, not PRP's original sources and not evidence that this project reproduced the papers or completed a benchmark:
-
-- *ReAct: Synergizing Reasoning and Acting in Language Models*, Shunyu Yao et al., 2023: <https://arxiv.org/abs/2210.03629>
-- *Tree of Thoughts: Deliberate Problem Solving with Large Language Models*, Shunyu Yao et al., 2023: <https://arxiv.org/abs/2305.10601>
-- *Reflexion: Language Agents with Verbal Reinforcement Learning*, Noah Shinn et al., 2023: <https://arxiv.org/abs/2303.11366>
-- *Self-Refine: Iterative Refinement with Self-Feedback*, Aman Madaan et al., 2023: <https://arxiv.org/abs/2303.17651>
-- *Graph of Thoughts: Solving Elaborate Problems with Large Language Models*, Maciej Besta et al., 2024: <https://arxiv.org/abs/2308.09687>
-- *Toolformer: Language Models Can Teach Themselves to Use Tools*, Timo Schick et al., 2023: <https://arxiv.org/abs/2302.04761>
-- *SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering*, John Yang et al., 2024: <https://arxiv.org/abs/2405.15793>
-
-PRP focuses on the engineering layer: turning actions, revisions, graphs and tools into persistent, verifiable and recoverable protocol facts.
-
-## Open Source & Reality
-
-PRP is maintained by one independent developer. I am leaving rural Gansu to rent a place elsewhere and take regular work to cover living expenses and API testing costs. That work will fragment development time, so later versions may not arrive soon, but development will not stop. I cannot devote all of my time to open source, yet I intend to maintain this project for the long term. Use, feedback, contributions, or sponsorship directly become development time and testing resources.
-
-## License and Boundaries
-
-Iskrov Agent is licensed under AGPL-3.0-only; see [LICENSE](LICENSE), [NOTICE](NOTICE) and [TRADEMARKS.md](TRADEMARKS.md). This version is a single-instance SQLite reference runtime. It does not provide multi-tenant billing, SSO, distributed queues, Kubernetes, complete Codex/Claude Code/MCP/A2A compatibility or a production SLA.
-
----
-
-<p align="center">
-  <strong>二十七步天注定，逆流河上任我行。</strong><br>
-  <sub>Искров · 甘肃</sub>
-</p>
+Iskrov Agent is licensed under the [GNU Affero General Public License v3.0-only](LICENSE). Network deployment of a modified version carries the corresponding source-availability obligations under AGPL-3.0-only. See [NOTICE](NOTICE) and [TRADEMARKS.md](TRADEMARKS.md).
