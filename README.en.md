@@ -4,6 +4,8 @@
 
 Iskrov Agent is an independent cloud-controlled, local-execution Agent product. It keeps model reasoning, planning, approval, evidence, budgets, and scheduling in the control plane, while reducing the local side to a lightweight, closed, authorized tool executor.
 
+**Use this repository if you need a runnable Agent product rather than a protocol specification.** Iskrov Agent owns the executor, providers, approvals, workspace, Bridge, and recovery logic; PRP is a separate project.
+
 ```text
 Cloud: models · planning · approval · evidence · scheduling
 Local: bounded tools · workspace operations · result submission
@@ -114,6 +116,8 @@ prp local approve <request_id> --workspace .
 prp local deny <request_id> --workspace . --reason "not allowed"
 ```
 
+The current distribution still exposes the `prp` and `prp-bridge` command names for runtime compatibility; the product and package identity are `iskrov-agent`.
+
 ## Boundaries
 
 Iskrov Agent is a single-instance reference product and does not promise a production SLA. It currently does not provide multi-tenant billing, SSO, distributed queues, Kubernetes, or complete Codex, Claude Code, MCP, or A2A compatibility.
@@ -128,6 +132,8 @@ These are two independent products:
 - **Iskrov Agent** is an AGPL-3.0-only Agent product using those concepts for cloud control and local tool execution.
 
 PRP can be implemented by other runtimes, and Iskrov Agent is not the only possible implementation of PRP. The two projects can evolve, release, and accept contributions independently.
+
+Installing Iskrov Agent does not install the PRP research repository; studying or implementing PRP does not require Iskrov Agent's cloud-local runtime.
 
 ## Open Source and License
 

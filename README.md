@@ -4,6 +4,8 @@
 
 Iskrov Agent 是一个独立的云端控制、本地执行 Agent 产品。它把模型推理、规划、审批、证据、预算和调度集中在控制面，把本机收敛为一个轻量、封闭、可授权的工具执行面。
 
+**如果你需要的是可运行的 Agent 产品，而不是协议规范，请使用这个仓库。** Iskrov Agent 自己拥有执行器、provider、审批、工作区、Bridge 和恢复逻辑；PRP 是另一个独立项目。
+
 ```text
 云端：模型 · 规划 · 审批 · 证据 · 调度
 本机：受限工具 · 工作区操作 · 结果回传
@@ -114,6 +116,8 @@ prp local approve <request_id> --workspace .
 prp local deny <request_id> --workspace . --reason "not allowed"
 ```
 
+当前发行包的命令入口仍叫 `prp` 和 `prp-bridge`，这是运行时兼容命名；产品身份和包身份已经是 `iskrov-agent`。
+
 ## 项目边界
 
 Iskrov Agent 是单实例参考产品，不承诺生产 SLA。当前不提供多租户计费、SSO、分布式队列、Kubernetes，也不声称完整兼容 Codex、Claude Code、MCP 或 A2A。
@@ -128,6 +132,8 @@ Iskrov Agent 是单实例参考产品，不承诺生产 SLA。当前不提供多
 - **Iskrov Agent**：AGPL-3.0-only 的 Agent 产品，使用这些概念实现云端控制与本地工具执行。
 
 PRP 可以被其他 runtime 实现，Iskrov Agent 也不等于 PRP 的唯一实现。两个项目可以独立演进、独立发布、独立接受贡献。
+
+这意味着：安装 Iskrov Agent 不等于安装 PRP 研究仓；研究或实现 PRP 也不需要引入 Iskrov Agent 的云本地运行时。
 
 ## 开源与许可证
 
