@@ -1,0 +1,15 @@
+Iskrov Agent
+Copyright 2026 Iskrov Agent Authors
+
+This product is licensed under the Apache License, Version 2.0
+(see LICENSE-APACHE).
+
+AGPL-3.0-only does not grant rights to use the Iskrov Agent name, project
+marks, or any future logo to imply origin, sponsorship, or endorsement. See
+TRADEMARKS.md for the project branding policy.
+
+Third-party notices
+-------------------
+
+No third-party runtime dependency is bundled at this version. When a
+dependency is added, its license and attribution are recorded here.

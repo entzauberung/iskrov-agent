@@ -1,0 +1,90 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "iskrov-agent"
+version = "0.0.1"
+description = "Cloud-controlled agent with a lightweight local tool client"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "AGPL-3.0-only"
+license-files = ["LICENSE", "NOTICE", "TRADEMARKS.md"]
+authors = [{ name = "Iskrov Agent Authors" }]
+
+dependencies = [
+    "fastapi>=0.115,<1.0",
+    "pydantic>=2.9,<3.0",
+    "httpx>=0.27,<1.0",
+    "aiosqlite>=0.20,<1.0",
+    "uvicorn>=0.30,<1.0",
+    "jsonschema>=4.23,<5.0",
+]
+
+[project.scripts]
+prp = "prp_runtime.client.cli:main"
+prp-bridge = "prp_runtime.client.cli:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3,<9.0",
+    "pytest-asyncio>=0.24,<2.0",
+    "respx>=0.21,<1.0",
+    "ruff>=0.6,<1.0",
+    "mypy>=1.11,<2.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/prp_runtime"]
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    "/AGENTS.md",
+    "/opencode.json",
+    "/ai",
+    "/ai/**",
+    "/dist",
+    "/dist/**",
+    "/external_tests/.results",
+    "/external_tests/.results/**",
+    "**/__pycache__/**",
+    "**/*.py[cod]",
+    "**/*.db",
+    "**/*.db-wal",
+    "**/*.db-shm",
+    "**/*.log",
+    "**/*.jsonl",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "strict"
+asyncio_default_fixture_loop_scope = "function"
+markers = [
+    "external: marks tests that require real network access to external APIs",
+    "live_provider: marks tests that make real calls to live provider endpoints",
+    "live_integration: marks tests that validate protocol integration with real endpoints",
+    "live_strategy: marks tests that validate routing and fallback strategies",
+    "live_agent: marks tests that validate end-to-end agent workflows",
+    "live_regression: marks tests that validate historical bug fixes remain resolved"
+]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.mypy]
+files = ["src/prp_runtime"]
+python_version = "3.12"
+strict = true
+
+# jsonschema 4.x ships no py.typed marker, so strict mode cannot see its types.
+# The alternative to this override is a hand written schema validator, which is
+# what the repair removed: a checker that silently skips the keyword it was never
+# taught reports an unapplied constraint as satisfied.
+[[tool.mypy.overrides]]
+module = "jsonschema.*"
+ignore_missing_imports = true
