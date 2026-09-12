@@ -1,6 +1,6 @@
 # Release Preparation
 
-## 0.1.1 (2026-09-12)
+## 0.1.0 (2026-09-12)
 
 - Added the architecture and PRP integration contracts.
 - Clarified the Native Agent API, Bridge, device, and control-plane boundaries.
@@ -10,7 +10,7 @@
 
 - Product: Iskrov Agent
 - Package: `iskrov-agent`
-- Version: `0.1.1`
+- Version: `0.1.0`
 - License: AGPL-3.0-only
 - Distribution status: prepared locally; not published
 
