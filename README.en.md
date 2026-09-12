@@ -11,7 +11,7 @@ Cloud: models · planning · approval · evidence · scheduling
 Local: bounded tools · workspace operations · result submission
 ```
 
-Current release: `0.0.1` · Python `3.12+` · AGPL-3.0-only · single-instance SQLite · no Docker
+Current release: `0.0.2` · Python `3.12+` · AGPL-3.0-only · single-instance SQLite · no Docker
 
 ## Product Position
 

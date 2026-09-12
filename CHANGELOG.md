@@ -2,7 +2,15 @@
 
 本文件记录 Iskrov Agent 的显著变更。
 
-`0.0.1` 是 Iskrov Agent 的首个独立发布包身份。数据库 schema 直接替换，pre-0.1 数据不提供向后兼容或迁移。
+`0.0.2` 是当前 Iskrov Agent 包身份。数据库 schema 直接替换，pre-0.1 数据不提供向后兼容或迁移。
+
+## [0.0.2] - 2026-09-12
+
+### Documentation and Contracts
+
+- Added architecture and PRP integration contracts.
+- Clarified Native Agent API, Bridge, device, and control-plane boundaries.
+- Refreshed product documentation and release metadata.
 
 ## [0.0.1] - 2026-09-11
 
@@ -16,11 +24,11 @@
 
 - This release contains the complete cloud-controlled, local-tool Agent runtime.
 
-## [0.0.4] - 2026-09-04
+## Historical pre-separation [0.0.4] - 2026-09-04
 
 ### Delivered
 
-- 包身份改为 `0.0.4`。BRIDGE 协议版本与包身份对齐。
+- 历史实现包身份为 `0.0.4`；该版本记录保留用于溯源，不代表当前发布身份。
 - 服务器脑 + 本机手：BRIDGE 不再走服务器工具 handler，也不解析客户端根目录。
 - 持久化 Bridge 客户端身份、能力、心跳和 snapshot；claim 绑定 `client_id`，跨客户端领取被拒绝。
 - Progressive 将具体 ToolCall 派发给服务器选定的 Bridge 客户端，远程等待与审批暂停分离，同一 Run 可恢复。
@@ -115,3 +123,9 @@
 - Planner、Verifier、预算强制、图调度与并行执行。
 - OpenAI Responses / Chat Completions 与 Anthropic Messages 入站绑定。
 - 出站流式调用；`/events` 是持久账本回放，不是上游流的转发。
+# 0.0.1 working-tree completion (2026-09-12)
+
+- Documented the control-plane, execution-plane, device, and Bridge boundaries.
+- Documented the mapping between Iskrov runtime facts and PRP Progressive facts.
+- Clarified Native API as the product contract and OpenAI/Anthropic routes as
+  compatibility adapters.

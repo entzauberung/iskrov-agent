@@ -4,14 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "iskrov-agent"
-version = "0.0.1"
+version = "0.0.2"
 description = "Cloud-controlled agent with a lightweight local tool client"
 readme = "README.md"
 requires-python = ">=3.12"
 license = "AGPL-3.0-only"
 license-files = ["LICENSE", "NOTICE", "TRADEMARKS.md"]
 authors = [{ name = "Iskrov Agent Authors" }]
-
 dependencies = [
     "fastapi>=0.115,<1.0",
     "pydantic>=2.9,<3.0",
@@ -20,6 +19,11 @@ dependencies = [
     "uvicorn>=0.30,<1.0",
     "jsonschema>=4.23,<5.0",
 ]
+
+[project.urls]
+Repository = "https://github.com/entzauberung/iskrov-agent"
+Issues = "https://github.com/entzauberung/iskrov-agent/issues"
+Documentation = "https://github.com/entzauberung/iskrov-agent#readme"
 
 [project.scripts]
 prp = "prp_runtime.client.cli:main"
