@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "iskrov-agent"
 version = "0.0.2"
-description = "Cloud-controlled agent with a lightweight local tool client"
+description = "Cloud-controlled Agent runtime with approvals, evidence, recovery, and a bounded local Bridge"
 readme = "README.md"
 requires-python = ">=3.12"
 license = "AGPL-3.0-only"

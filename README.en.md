@@ -1,140 +1,102 @@
 # Iskrov Agent
 
-> Cloud reasoning. Local execution.
+> Cloud control, local execution.
 
-Iskrov Agent is an independent cloud-controlled, local-execution Agent product. It keeps model reasoning, planning, approval, evidence, budgets, and scheduling in the control plane, while reducing the local side to a lightweight, closed, authorized tool executor.
+Iskrov Agent is a single-instance Agent runtime. Model planning, policy, approvals, budgets, evidence, scheduling, and recovery live in the control plane; the local machine exposes only registered, bounded, authorized tools.
 
-**Use this repository if you need a runnable Agent product rather than a protocol specification.** Iskrov Agent owns the executor, providers, approvals, workspace, Bridge, and recovery logic; PRP is a separate project.
-
-```text
-Cloud: models · planning · approval · evidence · scheduling
-Local: bounded tools · workspace operations · result submission
-```
-
-Current release: `0.0.2` · Python `3.12+` · AGPL-3.0-only · single-instance SQLite · no Docker
-
-## Product Position
-
-Iskrov Agent is not a chat UI and does not require every machine to download a full Agent CLI. It is for engineering tasks where a model needs to inspect code, propose changes, run bounded verification, and leave an auditable, recoverable record.
-
-The cloud control plane decides what should happen and whether it is allowed. The local execution plane performs only authorized operations inside the granted workspace and submits the result. The two planes connect through bounded tool calls, claims, leases, and idempotent result submission.
-
-## The Problem
-
-A model API solves:
+Use [Progressive Reasoning Protocol](https://github.com/entzauberung/prp) when you need the protocol research kernel. Use this repository when you need a runnable Agent service that connects models, workspaces, and local devices.
 
 ```text
-send a message -> receive an answer
+iPad / Web / CLI / compatible API
+              |
+        Native Agent API
+              |
+cloud: model · plan · policy · approval · evidence · budget · scheduler
+              |
+      CLOUD execution or Bridge claim/lease
+              |
+      registered tools in an authorized workspace
 ```
 
-An engineering Agent also needs to answer:
+Current release: `0.0.2` · Python `3.12+` · AGPL-3.0-only · SQLite single-instance reference deployment.
 
-- Was this operation allowed?
-- What evidence proves completion?
-- Who approved the write?
-- Should a failure be retried, cascaded, revised, or stopped?
-- Can the process recover safely after a server or client restart?
+## Product model
 
-Iskrov Agent is built for that complete execution chain, not just text generation.
+An iPad or other client is a remote control surface. It creates runs, watches events, inspects evidence, handles approvals, and cancels work. It does not run the full Agent, receive provider credentials, or receive arbitrary host paths.
 
-## Architecture
+When a local workspace is needed, the server selects a registered Bridge for a concrete tool call. The Bridge claims the call, performs only the bounded operation, and submits an idempotent result.
 
-### Cloud Control Plane
+## Capabilities
 
-- Accepts tasks and selects an execution strategy
-- Calls configured model providers
-- Coordinates Planner, Worker, Analyzer, and Verifier roles
-- Owns budgets, approvals, events, recovery, and final state
-- Dispatches local tool calls through a Native Bridge when needed
+- `DIRECT`, `CASCADE`, `PLANNED`, and `PROGRESSIVE` execution strategies.
+- OpenAI-compatible, OpenAI Responses, and Anthropic Messages provider adapters.
+- Native sessions, runs, events, tool calls, approvals, cancellation, and recovery.
+- Registered tools for files, search, patches, diffs, status, and targeted tests.
+- Owner-scoped workspaces, snapshots, changesets, merges, budgets, and evidence.
+- A model-free Bridge with claims, leases, heartbeats, offline recovery, and idempotent submission.
+- Bounded OpenAI Chat/Responses and Anthropic Messages compatibility routes.
 
-### Local Execution Plane
+## Control and execution planes
 
-- Does not run a model
-- Does not own cloud planning or approval authority
-- Executes only registered, bounded local tools
-- Does not require a full Agent CLI download
-- Supports claim recovery and idempotent result submission after disconnects
+The cloud controller selects the model, strategy, execution location, and approval path; coordinates Planner, Worker, Analyzer, and Verifier; and owns durable facts. The local plane does not plan or approve. It executes registered tools inside an authorized workspace and returns bounded results.
 
-## Tool Boundary
+The model cannot obtain arbitrary shell access, arbitrary host paths, unregistered network access, or privilege escalation. Writes pass through policy and approval. `HOST` is a path boundary, not an OS sandbox; `SANDBOXED` requires real Linux `bubblewrap`.
 
-The Agent can use only registered tools:
+## Relationship to PRP
 
-`list_files` · `read_file` · `search_text` · `apply_patch` · `run_targeted_test` · `get_diff` · `get_status`
+PRP defines evidence-gated Progressive revision: whether the next execution-graph version is allowed. Iskrov implements that semantic and adds provider, scheduling, approval, SQLite, workspace, merge, Bridge, and recovery systems. The two projects can be released independently.
 
-Writes pass through Policy and Approval. Tests use pre-registered structured commands. A model cannot obtain an arbitrary shell, arbitrary host paths, unregistered network access, or self-granted permissions.
-
-## Execution Strategies
-
-| Strategy | Use it for | Behavior |
-|---|---|---|
-| `DIRECT` | Simple tasks | One WorkUnit, one Attempt, one verification |
-| `CASCADE` | Model fallback | Move to the next profile only after a retryable failure |
-| `PLANNED` | Dependency graphs | Planner proposes a DAG; Workers execute dependencies |
-| `PROGRESSIVE` | Evidence and revision | Execute, merge, verify, reuse, and revise within limits |
-
-`PROGRESSIVE` is one execution strategy supported by Iskrov Agent. It is not the product name or the sole theoretical identity of this repository. The independent protocol research lives in [Progressive Reasoning Protocol](https://github.com/entzauberung/prp).
-
-## Security and Isolation
-
-- The default local path boundary is `HOST`, not an operating-system sandbox
-- Selecting `SANDBOXED` requires real Linux `bubblewrap`
-- Sequential `LOCAL + HOST + DIRECT` can operate in place inside an authorized workspace
-- Parallel work, `PLANNED`, and `PROGRESSIVE` use isolated Slots and ChangeSets
-- The process envelope limits concurrency, attempts, tokens, slots, and copy capacity
-- Resource exhaustion returns a structured error and never silently changes location, strategy, or isolation
-
-## Quick Start
-
-Install:
+## Install
 
 ```bash
-uv pip install .
+python -m pip install .
 ```
 
-Configure an OpenAI-compatible Worker profile:
+For development:
+
+```bash
+python -m pip install -e '.[dev]'
+pytest -q
+ruff check .
+mypy
+```
+
+Python 3.12 or newer is required.
+
+## Configure a provider
+
+The example below configures an OpenAI-compatible Worker profile. Replace the placeholders with your own deployment values and never commit credentials or local configuration files.
 
 ```bash
 export PRP_WORKER_PROFILE='{"alias":"worker","provider":"openai_compatible","model":"your-model","role":"WORKER","base_url":"https://models.example/v1","context_window_tokens":32000,"max_output_tokens":4000}'
 ```
 
-Run a local in-process task:
+## Run locally
 
 ```bash
 prp local run "summarise this repository" --workspace .
-```
-
-Local execution does not depend on an HTTP server. If another program needs the interface, start the loopback-bound service explicitly:
-
-```bash
 prp serve
 ```
 
-When a task pauses for approval:
+For an approval-paused local run:
 
 ```bash
 prp local approve <request_id> --workspace .
 prp local deny <request_id> --workspace . --reason "not allowed"
 ```
 
-The current distribution still exposes the `prp` and `prp-bridge` command names for runtime compatibility; the product and package identity are `iskrov-agent`.
+The installed `prp` and `prp-bridge` command names are retained for compatibility; the package identity is `iskrov-agent`.
 
-## Boundaries
+## API
 
-Iskrov Agent is a single-instance reference product and does not promise a production SLA. It currently does not provide multi-tenant billing, SSO, distributed queues, Kubernetes, or complete Codex, Claude Code, MCP, or A2A compatibility.
+The Native Agent API is the product contract for sessions, runs, events, tool calls, approvals, Bridge clients, and cancellation. OpenAI Chat/Responses and Anthropic Messages routes accept bounded compatibility subsets and map them to the same controller. Health and readiness are exposed at `/health` and `/ready`.
 
-It is not an arbitrary shell or a model-training platform. Model quality depends on the configured provider; the Agent places the execution process inside explicit tool, policy, evidence, and budget boundaries.
+See [README.md](README.md) for the Chinese project description and [docs/architecture.md](docs/architecture.md) for the detailed architecture.
 
-## Relationship to PRP
+## Status and limits
 
-These are two independent products:
+Version `0.0.2` is a single-instance reference product. It does not claim full Codex, Claude Code, MCP, or A2A compatibility, benchmark superiority, model-quality superiority, distributed queues, SSO, billing, Kubernetes deployment, or a production SLA.
 
-- **PRP** is an Apache-2.0 protocol research project defining facts, state machines, and revision laws for progressive reasoning.
-- **Iskrov Agent** is an AGPL-3.0-only Agent product using those concepts for cloud control and local tool execution.
+## License
 
-PRP can be implemented by other runtimes, and Iskrov Agent is not the only possible implementation of PRP. The two projects can evolve, release, and accept contributions independently.
-
-Installing Iskrov Agent does not install the PRP research repository; studying or implementing PRP does not require Iskrov Agent's cloud-local runtime.
-
-## Open Source and License
-
-Iskrov Agent is licensed under the [GNU Affero General Public License v3.0-only](LICENSE). Network deployment of a modified version carries the corresponding source-availability obligations under AGPL-3.0-only. See [NOTICE](NOTICE) and [TRADEMARKS.md](TRADEMARKS.md).
+Iskrov Agent is licensed under [AGPL-3.0-only](LICENSE). Network deployment of modified versions must comply with the corresponding-source obligations. See [NOTICE](NOTICE) and [TRADEMARKS.md](TRADEMARKS.md).
