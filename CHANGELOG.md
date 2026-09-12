@@ -2,9 +2,9 @@
 
 本文件记录 Iskrov Agent 的显著变更。
 
-`0.0.2` 是当前 Iskrov Agent 包身份。数据库 schema 直接替换，pre-0.1 数据不提供向后兼容或迁移。
+`0.1.1` 是当前 Iskrov Agent 包身份。数据库 schema 直接替换，pre-0.1 数据不提供向后兼容或迁移。
 
-## [0.0.2] - 2026-09-12
+## [0.1.1] - 2026-09-12
 
 ### Documentation and Contracts
 
@@ -71,7 +71,7 @@
 - 完整第三方协议实现、分布式队列、计费、SSO 或 Kubernetes。
 - 通用 shell、未注册网络或模型控制的权限升级。
 
-## [0.0.2] - 2026-08-22
+## [0.1.1] - 2026-08-22
 
 ### Historical Legal Note
 
@@ -95,7 +95,7 @@
 
 ### Verification
 
-- v0.0.2 package identity、最小云端代码任务（list/search/read/patch/targeted test/diff）和 API/Bridge 定向门禁的源码与定向证据已记录。
+- v0.1.1 package identity、最小云端代码任务（list/search/read/patch/targeted test/diff）和 API/Bridge 定向门禁的源码与定向证据已记录。
 - 相关证据来自仓库 conformance/integration tests 与 `ai/RELEASE-EVIDENCE-MATRIX.md`、`ai/PROTOCOL-VALIDATION.json`、`ai/PROVIDER-CAPABILITIES.json`；这些记录不是持续 CI、benchmark、SLA 或所有 provider 通过证明。
 
 ## [0.0.1] - 未发布
