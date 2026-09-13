@@ -1,6 +1,6 @@
 # Release Preparation
 
-## 0.1.1 (2026-09-12)
+## 0.1.2 (2026-09-12)
 
 - Added the architecture and PRP integration contracts.
 - Added `iskrov` and `iskrov-bridge` as the official CLI entry points while retaining the historical `prp` aliases.
@@ -11,7 +11,7 @@
 
 - Product: Iskrov Agent
 - Package: `iskrov-agent`
-- Version: `0.1.1`
+- Version: `0.1.2`
 - License: AGPL-3.0-only
 - Distribution status: prepared locally; not published
 

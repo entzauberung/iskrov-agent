@@ -1,4 +1,4 @@
-"""Package identity for Iskrov Agent v0.1.1."""
+"""Package identity for Iskrov Agent v0.1.2."""
 
 import tomllib
 from pathlib import Path
@@ -6,7 +6,7 @@ from pathlib import Path
 import prp_runtime
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-EXPECTED_VERSION = "0.1.1"
+EXPECTED_VERSION = "0.1.2"
 EXPECTED_LICENSE = "AGPL-3.0-only"
 
 

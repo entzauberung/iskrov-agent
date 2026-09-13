@@ -18,7 +18,7 @@ iPad / Web / CLI / 兼容接口
       授权工作区中的注册工具
 ```
 
-当前版本：`0.1.1` · Python `3.12+` · AGPL-3.0-only · SQLite 单实例参考部署。
+当前版本：`0.1.2` · Python `3.12+` · AGPL-3.0-only · SQLite 单实例参考部署。
 
 ## 产品定位
 
@@ -120,7 +120,7 @@ Native Agent API 是产品主接口，覆盖 Session、Run、Event、Tool Call�
 
 ## 项目状态
 
-`0.1.1` 是单实例参考产品版本，不声称完整兼容 Codex、Claude Code、MCP 或 A2A，也不声称 benchmark 优势或模型质量优势。架构和 PRP 映射见 [`docs/architecture.md`](docs/architecture.md) 与 [`docs/prp-integration.md`](docs/prp-integration.md)。
+`0.1.2` 是单实例参考产品版本，不声称完整兼容 Codex、Claude Code、MCP 或 A2A，也不声称 benchmark 优势或模型质量优势。架构和 PRP 映射见 [`docs/architecture.md`](docs/architecture.md) 与 [`docs/prp-integration.md`](docs/prp-integration.md)。
 
 ## 英文说明
 
