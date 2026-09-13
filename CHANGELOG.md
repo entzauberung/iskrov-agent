@@ -2,7 +2,14 @@
 
 本文件记录 Iskrov Agent 的显著变更。
 
-`0.1.0` 是当前 Iskrov Agent 包身份。数据库 schema 直接替换，pre-0.1 数据不提供向后兼容或迁移。
+`0.1.1` 是当前 Iskrov Agent 包身份。数据库 schema 直接替换，pre-0.1 数据不提供向后兼容或迁移。
+
+## [0.1.1] - 2026-09-12
+
+### Release Consistency
+
+- Unified package, runtime, tests, README, and release metadata on `0.1.1`.
+- Kept `iskrov` and `iskrov-bridge` as official CLI entry points.
 
 ## [0.1.0] - 2026-09-12
 

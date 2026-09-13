@@ -18,7 +18,7 @@ cloud: model · plan · policy · approval · evidence · budget · scheduler
       registered tools in an authorized workspace
 ```
 
-Current release: `0.1.0` · Python `3.12+` · AGPL-3.0-only · SQLite single-instance reference deployment.
+Current release: `0.1.1` · Python `3.12+` · AGPL-3.0-only · SQLite single-instance reference deployment.
 
 ## Product model
 
@@ -95,7 +95,7 @@ See [README.md](README.md) for the Chinese project description and [docs/archite
 
 ## Status and limits
 
-Version `0.1.0` is a single-instance reference product. It does not claim full Codex, Claude Code, MCP, or A2A compatibility, benchmark superiority, model-quality superiority, distributed queues, SSO, billing, Kubernetes deployment, or a production SLA.
+Version `0.1.1` is a single-instance reference product. It does not claim full Codex, Claude Code, MCP, or A2A compatibility, benchmark superiority, model-quality superiority, distributed queues, SSO, billing, Kubernetes deployment, or a production SLA.
 
 ## License
 

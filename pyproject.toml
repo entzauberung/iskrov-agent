@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "iskrov-agent"
-version = "0.1.0"
+version = "0.1.1"
 description = "Cloud-controlled Agent runtime with approvals, evidence, recovery, and a bounded local Bridge"
 readme = "README.md"
 requires-python = ">=3.12"

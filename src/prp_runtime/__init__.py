@@ -6,7 +6,7 @@ recovery runtime. It implements the Progressive Reasoning Protocol strategy.
 
 __all__ = ["__version__", "PACKAGE_NAME", "LICENSE_EXPRESSION", "package_info"]
 
-__version__ = "0.0.2"
+__version__ = "0.1.1"
 
 PACKAGE_NAME = "iskrov-agent"
 
