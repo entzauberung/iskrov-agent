@@ -3,6 +3,7 @@
 ## 0.1.1 (2026-09-12)
 
 - Added the architecture and PRP integration contracts.
+- Added `iskrov` and `iskrov-bridge` as the official CLI entry points while retaining the historical `prp` aliases.
 - Clarified the Native Agent API, Bridge, device, and control-plane boundaries.
 - Refreshed the product documentation and release metadata.
 

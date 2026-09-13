@@ -110,7 +110,7 @@ prp local approve <request_id> --workspace .
 prp local deny <request_id> --workspace . --reason "not allowed"
 ```
 
-安装后的命令 `prp` 和 `prp-bridge` 为历史兼容名称；包身份是 `iskrov-agent`，产品身份是 Iskrov Agent。
+安装后的正式命令是 `iskrov` 和 `iskrov-bridge`。`prp` 和 `prp-bridge` 作为历史兼容名称保留；包身份是 `iskrov-agent`，产品身份是 Iskrov Agent。
 
 ## API
 

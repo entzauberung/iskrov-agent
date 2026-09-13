@@ -85,7 +85,7 @@ prp local approve <request_id> --workspace .
 prp local deny <request_id> --workspace . --reason "not allowed"
 ```
 
-The installed `prp` and `prp-bridge` command names are retained for compatibility; the package identity is `iskrov-agent`.
+The installed `iskrov` and `iskrov-bridge` commands are the official entry points. `prp` and `prp-bridge` remain as compatibility aliases; the package identity is `iskrov-agent`.
 
 ## API
 

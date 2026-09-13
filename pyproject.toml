@@ -26,6 +26,8 @@ Issues = "https://github.com/entzauberung/iskrov-agent/issues"
 Documentation = "https://github.com/entzauberung/iskrov-agent#readme"
 
 [project.scripts]
+iskrov = "prp_runtime.client.cli:main"
+iskrov-bridge = "prp_runtime.client.cli:main"
 prp = "prp_runtime.client.cli:main"
 prp-bridge = "prp_runtime.client.cli:main"
 
